@@ -1,8 +1,7 @@
 let board = [];
 let currentPlayer = "X";
-const size = 15; // 15x15 grid for 5-in-a-row
+const size = 19;
 
-// Initialize the board with empty cells
 function initializeBoard() {
   board = Array.from({ length: size }, () => Array(size).fill(null));
   const boardElement = document.getElementById("board");
@@ -19,37 +18,39 @@ function initializeBoard() {
   }
 }
 
-// Handle a click on the board
 function handleSquareClick(event) {
   const row = event.target.dataset.row;
   const col = event.target.dataset.col;
 
-  // Prevent playing on already occupied squares
   if (board[row][col] !== null) return;
 
   board[row][col] = currentPlayer;
-  event.target.textContent = currentPlayer;
+  event.target.textContent = currentPlayer === "X" ? "&#xf00d;" : "&#xf10c;"; // Using FontAwesome icons
+
+  if (currentPlayer === "X") {
+    event.target.classList.add("X");
+  } else {
+    event.target.classList.add("O");
+  }
 
   if (checkWin(parseInt(row), parseInt(col))) {
     alert(`${currentPlayer} wins!`);
     restartGame();
   } else {
-    currentPlayer = currentPlayer === "X" ? "O" : "X"; // Switch player
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
   }
 }
 
-// Check for a win (5 in a row)
 function checkWin(row, col) {
   const directions = [
-    { r: 0, c: 1 },  // Horizontal
-    { r: 1, c: 0 },  // Vertical
-    { r: 1, c: 1 },  // Diagonal /
-    { r: 1, c: -1 }, // Diagonal \
+    { r: 0, c: 1 }, 
+    { r: 1, c: 0 },
+    { r: 1, c: 1 },
+    { r: 1, c: -1 },
   ];
 
   for (let { r, c } of directions) {
     let count = 1;
-    // Check in both directions (positive and negative)
     for (let i = 1; i < 5; i++) {
       const newRow = row + r * i;
       const newCol = col + c * i;
@@ -73,11 +74,9 @@ function checkWin(row, col) {
   return false;
 }
 
-// Restart the game
 function restartGame() {
   initializeBoard();
   currentPlayer = "X";
 }
 
-// Initialize the game on page load
 initializeBoard();
