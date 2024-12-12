@@ -1,6 +1,6 @@
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Sarabun', sans-serif;
+  background-color: #eaeaea;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,26 +10,52 @@ body {
 
 .game-container {
   text-align: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  font-size: 2rem;
+  color: #333;
 }
 
 .board {
   display: grid;
-  grid-template-columns: repeat(15, 40px);
-  grid-template-rows: repeat(15, 40px);
+  grid-template-columns: repeat(19, 60px);
+  grid-template-rows: repeat(19, 60px);
   gap: 5px;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
 .square {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   background-color: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: 30px;
   cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.square:hover {
+  background-color: #f1f1f1;
+  transform: scale(1.1);
+}
+
+.square.X {
+  color: #ff5733;
+  animation: animateX 0.5s ease;
+}
+
+.square.O {
+  color: #007bff;
+  animation: animateO 0.5s ease;
 }
 
 button {
@@ -37,4 +63,37 @@ button {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Animation for X */
+@keyframes animateX {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation for O */
+@keyframes animateO {
+  0% {
+    transform: rotate(180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
 }
