@@ -1,82 +1,101 @@
+const gameContainer = document.getElementById("game");
+const statusDisplay = document.getElementById("status");
+const GRID_SIZE = 20; // ขนาดกระดาน
+const WIN_CONDITION = 5; // จำนวนที่ต้องต่อกันเพื่อชนะ
+
 let board = [];
 let currentPlayer = "X";
-const size = 19;
+let gameActive = true;
 
-function initializeBoard() {
-  board = Array.from({ length: size }, () => Array(size).fill(null));
-  const boardElement = document.getElementById("board");
-  boardElement.innerHTML = "";
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      const square = document.createElement("div");
-      square.classList.add("square");
-      square.dataset.row = i;
-      square.dataset.col = j;
-      square.addEventListener("click", handleSquareClick);
-      boardElement.appendChild(square);
+// สร้างกระดานเกม
+function createBoard() {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    board[row] = [];
+    for (let col = 0; col < GRID_SIZE; col++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      gameContainer.appendChild(cell);
+      board[row][col] = "";
+      cell.addEventListener("click", handleCellClick);
     }
   }
 }
 
-function handleSquareClick(event) {
-  const row = event.target.dataset.row;
-  const col = event.target.dataset.col;
-
-  if (board[row][col] !== null) return;
-
-  board[row][col] = currentPlayer;
-  event.target.textContent = currentPlayer === "X" ? "&#xf00d;" : "&#xf10c;"; // Using FontAwesome icons
-
-  if (currentPlayer === "X") {
-    event.target.classList.add("X");
-  } else {
-    event.target.classList.add("O");
-  }
-
-  if (checkWin(parseInt(row), parseInt(col))) {
-    alert(`${currentPlayer} wins!`);
-    restartGame();
-  } else {
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-  }
-}
-
+// ตรวจสอบเงื่อนไขชนะ
 function checkWin(row, col) {
   const directions = [
-    { r: 0, c: 1 }, 
-    { r: 1, c: 0 },
-    { r: 1, c: 1 },
-    { r: 1, c: -1 },
+    { x: 0, y: 1 }, // แนวนอน
+    { x: 1, y: 0 }, // แนวตั้ง
+    { x: 1, y: 1 }, // แนวทแยงขวาล่าง
+    { x: 1, y: -1 }, // แนวทแยงซ้ายล่าง
   ];
 
-  for (let { r, c } of directions) {
+  for (let { x, y } of directions) {
     let count = 1;
-    for (let i = 1; i < 5; i++) {
-      const newRow = row + r * i;
-      const newCol = col + c * i;
-      if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size && board[newRow][newCol] === currentPlayer) {
+
+    for (let step = 1; step < WIN_CONDITION; step++) {
+      const newRow = row + step * x;
+      const newCol = col + step * y;
+      if (
+        newRow >= 0 &&
+        newRow < GRID_SIZE &&
+        newCol >= 0 &&
+        newCol < GRID_SIZE &&
+        board[newRow][newCol] === currentPlayer
+      ) {
         count++;
       } else {
         break;
       }
     }
-    for (let i = 1; i < 5; i++) {
-      const newRow = row - r * i;
-      const newCol = col - c * i;
-      if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size && board[newRow][newCol] === currentPlayer) {
+
+    for (let step = 1; step < WIN_CONDITION; step++) {
+      const newRow = row - step * x;
+      const newCol = col - step * y;
+      if (
+        newRow >= 0 &&
+        newRow < GRID_SIZE &&
+        newCol >= 0 &&
+        newCol < GRID_SIZE &&
+        board[newRow][newCol] === currentPlayer
+      ) {
         count++;
       } else {
         break;
       }
     }
-    if (count >= 5) return true;
+
+    if (count >= WIN_CONDITION) return true;
   }
+
   return false;
 }
 
-function restartGame() {
-  initializeBoard();
-  currentPlayer = "X";
+// จัดการคลิกที่ช่อง
+function handleCellClick(event) {
+  if (!gameActive) return;
+
+  const cell = event.target;
+  const row = +cell.dataset.row;
+  const col = +cell.dataset.col;
+
+  if (board[row][col] !== "") return;
+
+  board[row][col] = currentPlayer;
+  cell.textContent = currentPlayer;
+  cell.classList.add("taken");
+
+  if (checkWin(row, col)) {
+    statusDisplay.textContent = `Player ${currentPlayer} Wins!`;
+    gameActive = false;
+    return;
+  }
+
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+  statusDisplay.textContent = `Player ${currentPlayer}'s Turn`;
 }
 
-initializeBoard();
+// เริ่มเกม
+createBoard();
